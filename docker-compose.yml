@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  client:
+    build: ./front
+    ports:
+      - 8080:8080
+    volumes:
+      - ./front:/data
+    environment:
+      - API_URL=http://localhost:3000/
+      - PORT=8080
+      - HOST=0.0.0.0
+
+
+  server:
+    build: ./back
+    ports:
+      - 3000:3000
+    volumes:
+      - ./back:/data
+    depends_on:
+      - server-database
+    environment:
+      - DATABASE_HOST=server-database
+      - DATABASE_PORT=27017
+      - DATABASE_NAME=RouteINO
+
+  server-database:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    restart: always
+volumes:
+  mongodb_data:
+    driver: local
